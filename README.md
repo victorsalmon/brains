@@ -42,10 +42,13 @@ claude --plugin-dir /path/to/brains
 echo '{ "plugins": ["/path/to/brains"] }' > .claude/plugins.json
 ```
 
+After installing, run `/brains:setup --global` to install dependencies and configure LLM providers, then `/brains:setup --local` in each project for project-specific settings.
+
 ## Skills
 
 | Skill | Command | Default Mode | Description |
 |-------|---------|:------------:|-------------|
+| setup | `/brains:setup` | -- | Install dependencies, configure LLM providers, set defaults |
 | suggest | *(auto)* | -- | Detects complex tasks and recommends BRAINS |
 | storm | `/brains:storm` | parallel | Multi-LLM brainstorming with visual companion |
 | research | `/brains:research` | single | Codebase, dependency, and documentation investigation |
@@ -95,6 +98,10 @@ brains/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin manifest
 ├── skills/
+│   ├── setup/
+│   │   ├── SKILL.md             # Setup wizard
+│   │   └── references/
+│   │       └── settings-format.md
 │   ├── suggest/SKILL.md         # Auto-triggered complexity detection
 │   ├── storm/
 │   │   ├── SKILL.md             # Brainstorming skill

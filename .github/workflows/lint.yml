@@ -125,6 +125,12 @@ jobs:
             failed=1
           fi
 
+          # Setup settings format reference must exist
+          if [ ! -f "skills/setup/references/settings-format.md" ]; then
+            echo "FAIL: skills/setup/references/settings-format.md missing"
+            failed=1
+          fi
+
           # Visual companion scripts must exist
           for script in frame-template.html helper.js server.cjs start-server.sh stop-server.sh; do
             if [ ! -f "skills/storm/scripts/$script" ]; then

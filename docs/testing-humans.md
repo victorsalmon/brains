@@ -32,6 +32,35 @@ If this fails, multi-LLM modes (`--parallel`, `--debate`) won't work. Single mod
 
 ## Test Each Skill
 
+### 0. Setup
+
+```
+/brains:setup --global
+```
+
+**What to check:**
+- Detects which dependencies are installed vs missing
+- Offers to install uv (if missing)
+- Walks through star-chamber provider configuration
+- Asks about default modes for each skill
+- Writes global defaults to `~/.config/brains/defaults.json`
+
+```
+/brains:setup --local
+```
+
+**What to check:**
+- Creates `docs/plans/` and `docs/adr/` directories
+- Creates `.claude/brains.local.md` with settings
+- Adds `brains.local.md` to `.gitignore`
+- Shows verification summary
+
+**Without flags:**
+```
+/brains:setup
+```
+- Should ask whether global or local
+
 ### 1. Suggest (Auto-Detection)
 
 The suggest skill triggers automatically on complex tasks. To test:

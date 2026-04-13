@@ -29,12 +29,15 @@ Verify all required files exist and are well-formed.
 jq . /path/to/brains/.claude-plugin/plugin.json > /dev/null 2>&1 && echo "T01.1 PASS" || echo "T01.1 FAIL"
 
 # All 8 SKILL.md files exist
-for skill in suggest storm research architect implement nurture secure brains; do
+for skill in setup suggest storm research architect implement nurture secure brains; do
   [[ -f "/path/to/brains/skills/$skill/SKILL.md" ]] && echo "T01.2 PASS: $skill" || echo "T01.2 FAIL: $skill"
 done
 
 # Shared reference exists
 [[ -f "/path/to/brains/references/multi-llm-protocol.md" ]] && echo "T01.3 PASS" || echo "T01.3 FAIL"
+
+# Setup settings reference exists
+[[ -f "/path/to/brains/skills/setup/references/settings-format.md" ]] && echo "T01.4 PASS" || echo "T01.4 FAIL"
 
 # Visual companion scripts exist and are executable
 for script in start-server.sh stop-server.sh; do
@@ -49,7 +52,7 @@ done
 Every SKILL.md must have valid YAML frontmatter with required fields.
 
 ```bash
-for skill in suggest storm research architect implement nurture secure brains; do
+for skill in setup suggest storm research architect implement nurture secure brains; do
   FILE="/path/to/brains/skills/$skill/SKILL.md"
   # Check frontmatter delimiters
   head -1 "$FILE" | grep -q '^---' && tail -n +2 "$FILE" | grep -q '^---' || { echo "T02.1 FAIL: $skill missing frontmatter"; continue; }
@@ -85,24 +88,62 @@ done
 
 **Expected**: All PASS.
 
-### T04: Suggest Skill — Complexity Detection
+### T04: Setup Skill
+
+**T04.1 — Scope prompt:**
+```
+/brains:setup
+```
+Expected: Asks whether global or local
+
+**T04.2 — Global dependency check:**
+```
+/brains:setup --global
+```
+Expected: Checks for uv, node, tmux, star-chamber, beads. Reports installed/missing status for each.
+
+**T04.3 — Global provider configuration:**
+Expected: If star-chamber config missing, presents 3 options (platform, direct keys, skip). If config exists, shows current providers and asks whether to reconfigure.
+
+**T04.4 — Global default modes:**
+Expected: Presents table of skills with built-in defaults, asks user to customize.
+
+**T04.5 — Global config write:**
+Expected: Writes `~/.config/brains/defaults.json` with chosen modes and debate rounds.
+
+**T04.6 — Local directory creation:**
+```
+/brains:setup --local
+```
+Expected: Creates `docs/plans/` and `docs/adr/` directories.
+
+**T04.7 — Local settings file:**
+Expected: Creates `.claude/brains.local.md` with YAML frontmatter and mode defaults table.
+
+**T04.8 — Local gitignore update:**
+Expected: Adds `.claude/brains.local.md` to `.gitignore` if not already present.
+
+**T04.9 — Verification summary:**
+Expected: Both global and local setup end with a verification summary showing PASS/FAIL for each step.
+
+### T05: Suggest Skill — Complexity Detection
 
 Test that the suggest skill correctly identifies complex tasks.
 
-**T04.1 — Complex task triggers suggestion:**
+**T05.1 — Complex task triggers suggestion:**
 Prompt: "I need to build a distributed task queue with retry logic, dead letter queues, and a monitoring dashboard"
 Expected: Claude suggests `/brains:storm` or `/brains:brains`
 
-**T04.2 — Simple task does NOT trigger:**
+**T05.2 — Simple task does NOT trigger:**
 Prompt: "Rename the variable `foo` to `bar` in utils.py"
 Expected: Claude proceeds directly without suggesting BRAINS
 
-**T04.3 — Never auto-invokes:**
+**T05.3 — Never auto-invokes:**
 For any prompt, verify BRAINS is suggested (not invoked). The user must explicitly run a `/brains:*` command.
 
-### T05: Storm Skill — Brainstorming Flow
+### T06: Storm Skill — Brainstorming Flow
 
-**T05.1 — Single mode:**
+**T13.1 — Single mode:**
 ```
 /brains:storm --single "design a caching layer"
 ```
@@ -112,7 +153,7 @@ Expected:
 - Proposes 2-3 approaches
 - Writes spec to `docs/plans/`
 
-**T05.2 — Parallel mode (default):**
+**T13.2 — Parallel mode (default):**
 ```
 /brains:storm "design a caching layer"
 ```
@@ -122,7 +163,7 @@ Expected:
 - Presents council feedback
 - Offers to revise based on feedback
 
-**T05.3 — Debate mode:**
+**T13.3 — Debate mode:**
 ```
 /brains:storm --debate "design a caching layer"
 ```
@@ -131,102 +172,102 @@ Expected:
 - Invokes star-chamber at major decision points
 - Synthesizes anonymously between rounds
 
-**T05.4 — Visual companion offer:**
+**T06.4 — Visual companion offer:**
 Prompt with visual aspects: `/brains:storm "design a dashboard UI"`
 Expected: Offers visual companion in its own message (no other content in that message)
 
-### T06: Research Skill
+### T07: Research Skill
 
-**T06.1 — Defines questions first:**
+**T13.1 — Defines questions first:**
 ```
 /brains:research "what testing frameworks work best here"
 ```
 Expected: Presents research questions before investigating
 
-**T06.2 — Uses appropriate tools:**
+**T13.2 — Uses appropriate tools:**
 Expected: Uses Glob, Grep, Read for codebase; WebSearch/WebFetch for external
 
-**T06.3 — Structured output:**
+**T13.3 — Structured output:**
 Expected: Report with findings, confidence levels, sources, implications
 
-### T07: Architect Skill
+### T08: Architect Skill
 
-**T07.1 — Reads prior outputs:**
+**T13.1 — Reads prior outputs:**
 After completing storm and research phases, run `/brains:architect`
 Expected: References the storm spec and research report
 
-**T07.2 — Creates ADRs:**
+**T13.2 — Creates ADRs:**
 Expected: Creates numbered ADR files in `docs/adr/`
 
-**T07.3 — Decision framework:**
+**T13.3 — Decision framework:**
 Expected: Categorizes decisions by impact and reversibility
 
-### T08: Implement Skill
+### T09: Implement Skill
 
-**T08.1 — Plan structure:**
+**T13.1 — Plan structure:**
 ```
 /brains:implement
 ```
 Expected: Creates ordered task list with Nurture and Secure as final phases
 
-**T08.2 — Beads detection:**
+**T13.2 — Beads detection:**
 Expected: Checks for beads plugin, uses TaskCreate/TaskUpdate as fallback
 
-**T08.3 — Tmux detection:**
+**T13.3 — Tmux detection:**
 In tmux: Expected: Opens new pane
 Not in tmux: Expected: Provides launch instructions
 
-**T08.4 — Fresh context:**
+**T12.4 — Fresh context:**
 Expected: The implementation session starts with a clean context, not the current conversation
 
-### T09: Nurture Skill
+### T10: Nurture Skill
 
-**T09.1 — Review first, then fix:**
+**T13.1 — Review first, then fix:**
 Expected: Presents prioritized issue list BEFORE making changes
 
-**T09.2 — Priority ordering:**
+**T13.2 — Priority ordering:**
 Expected: P0 bugs fixed first, then P1 missing features/tests, then P2 quality
 
-**T09.3 — Atomic commits:**
+**T13.3 — Atomic commits:**
 Expected: Each fix committed separately with descriptive messages
 
-### T10: Secure Skill
+### T11: Secure Skill
 
-**T10.1 — Secrets scan:**
+**T13.1 — Secrets scan:**
 Expected: Runs grep patterns for common secret indicators
 
-**T10.2 — OWASP categories:**
+**T13.2 — OWASP categories:**
 Expected: Reviews relevant OWASP Top 10 categories for the project's stack
 
-**T10.3 — Dependency audit:**
+**T13.3 — Dependency audit:**
 Expected: Runs appropriate audit command for the project's package manager
 
-### T11: BRAINS Orchestrator
+### T12: BRAINS Orchestrator
 
-**T11.1 — Sequential execution:**
+**T13.1 — Sequential execution:**
 ```
 /brains:brains "build a webhook processor"
 ```
 Expected: Storm → Research → Architect → Implement in order
 
-**T11.2 — User gates:**
+**T13.2 — User gates:**
 Expected: Pauses between each phase for user confirmation
 
-**T11.3 — Phase skipping:**
+**T13.3 — Phase skipping:**
 At a user gate, say "skip research"
 Expected: Proceeds to next phase with a warning
 
-**T11.4 — Mode propagation:**
+**T12.4 — Mode propagation:**
 ```
 /brains:brains --debate "build a webhook processor"
 ```
 Expected: All phases use debate mode unless overridden
 
-**T11.5 — Resume after interruption:**
+**T12.5 — Resume after interruption:**
 Start a pipeline, complete Storm, then end the session. Start a new session and run `/brains:brains` again.
 Expected: Detects existing storm output in `docs/plans/` and offers to resume from research.
 
-### T12: Cross-Reference Integrity
+### T13: Cross-Reference Integrity
 
 Verify all internal file references resolve:
 
@@ -261,15 +302,16 @@ done
 | T01 Structure | | |
 | T02 Frontmatter | | |
 | T03 Descriptions | | |
-| T04 Suggest | | |
-| T05 Storm | | |
-| T06 Research | | |
-| T07 Architect | | |
-| T08 Implement | | |
-| T09 Nurture | | |
-| T10 Secure | | |
-| T11 BRAINS | | |
-| T12 References | | |
+| T04 Setup | | |
+| T05 Suggest | | |
+| T06 Storm | | |
+| T07 Research | | |
+| T08 Architect | | |
+| T09 Implement | | |
+| T10 Nurture | | |
+| T11 Secure | | |
+| T12 BRAINS | | |
+| T13 References | | |
 
 **Overall:** PASS / FAIL
 **Issues found:**
