@@ -2,6 +2,8 @@
 
 **B**rainstorm **R**esearch **A**rchitect **I**mplement **N**urture **S**ecure
 
+![BRAINS: Agentic Coding Lifecycle](assets/brains-lifecycle.jpeg)
+
 A structured, multi-LLM development workflow plugin for Claude Code. Guides complex tasks through six disciplined phases, with optional multi-model debate and review at each stage.
 
 ## How It Works
