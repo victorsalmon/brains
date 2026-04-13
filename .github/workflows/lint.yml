@@ -1,0 +1,157 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-json:
+    name: Validate JSON
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate plugin.json
+        run: jq . .claude-plugin/plugin.json > /dev/null
+
+  validate-frontmatter:
+    name: Validate SKILL.md Frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check all SKILL.md files have required frontmatter
+        run: |
+          failed=0
+          for skill_file in skills/*/SKILL.md; do
+            skill_name=$(basename "$(dirname "$skill_file")")
+
+            # Check frontmatter delimiters exist
+            if ! head -1 "$skill_file" | grep -q '^---$'; then
+              echo "FAIL: $skill_name — missing opening frontmatter delimiter"
+              failed=1
+              continue
+            fi
+
+            # Extract frontmatter (between first and second ---)
+            frontmatter=$(sed -n '2,/^---$/p' "$skill_file" | head -n -1)
+
+            # Check required fields
+            if ! echo "$frontmatter" | grep -q '^name:'; then
+              echo "FAIL: $skill_name — missing 'name' field"
+              failed=1
+            fi
+            if ! echo "$frontmatter" | grep -q '^description:'; then
+              echo "FAIL: $skill_name — missing 'description' field"
+              failed=1
+            fi
+
+            # Check description uses third person
+            desc=$(echo "$frontmatter" | grep '^description:')
+            if ! echo "$desc" | grep -qi 'this skill'; then
+              echo "WARN: $skill_name — description should use third person ('This skill...')"
+            fi
+
+            echo "OK: $skill_name"
+          done
+
+          if [ $failed -ne 0 ]; then
+            echo "::error::One or more SKILL.md files have frontmatter issues"
+            exit 1
+          fi
+
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+      - name: Create markdownlint config
+        run: |
+          cat > .markdownlint.json << 'EOF'
+          {
+            "default": true,
+            "MD013": false,
+            "MD033": false,
+            "MD041": false,
+            "MD024": false,
+            "MD040": false
+          }
+          EOF
+      - name: Lint markdown files
+        run: |
+          markdownlint \
+            README.md \
+            'skills/*/SKILL.md' \
+            'skills/*/references/*.md' \
+            'references/*.md' \
+            'docs/*.md' \
+            || true
+
+  lint-shell:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+      - name: Run shellcheck
+        run: |
+          find . -name '*.sh' -not -path './.git/*' -print0 | \
+            xargs -0 shellcheck --severity=warning || true
+
+  check-references:
+    name: Check Internal References
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify referenced files exist
+        run: |
+          failed=0
+
+          # Shared multi-LLM protocol must exist
+          if [ ! -f "references/multi-llm-protocol.md" ]; then
+            echo "FAIL: references/multi-llm-protocol.md missing"
+            failed=1
+          fi
+
+          # Visual companion reference must exist
+          if [ ! -f "skills/storm/references/visual-companion.md" ]; then
+            echo "FAIL: skills/storm/references/visual-companion.md missing"
+            failed=1
+          fi
+
+          # Visual companion scripts must exist
+          for script in frame-template.html helper.js server.cjs start-server.sh stop-server.sh; do
+            if [ ! -f "skills/storm/scripts/$script" ]; then
+              echo "FAIL: skills/storm/scripts/$script missing"
+              failed=1
+            fi
+          done
+
+          # Shell scripts must be executable
+          for script in skills/storm/scripts/*.sh; do
+            if [ ! -x "$script" ]; then
+              echo "FAIL: $script is not executable"
+              failed=1
+            fi
+          done
+
+          # Every non-suggest skill must reference multi-llm-protocol
+          for skill in storm research architect implement nurture secure brains; do
+            if ! grep -q 'multi-llm-protocol.md' "skills/$skill/SKILL.md"; then
+              echo "FAIL: skills/$skill/SKILL.md does not reference multi-llm-protocol.md"
+              failed=1
+            fi
+          done
+
+          if [ $failed -ne 0 ]; then
+            echo "::error::One or more internal references are broken"
+            exit 1
+          fi
+
+          echo "All internal references verified."
