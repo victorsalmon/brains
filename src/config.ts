@@ -1,3 +1,13 @@
+/**
+ * BRAINS Configuration Loader
+ *
+ * Reads config from ~/.config/opencode/brains.json (global) or
+ * .opencode/brains.json (local override). Uses Zod for validation.
+ * Falls back to sensible defaults if no config file exists.
+ *
+ * Port note: Original Claude Code plugin used settings.local.json.
+ * OpenCode port uses a dedicated brains.json at the OpenCode config path.
+ */
 import { z } from "zod"
 import { homedir } from "os"
 import { join } from "path"

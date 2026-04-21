@@ -1,8 +1,16 @@
 /**
- * Complexity detection hook for BRAINS suggest.
+ * Complexity Detection Hook
  *
- * Monitors incoming messages for complexity signals and suggests
- * the BRAINS workflow when warranted. Never auto-invokes BRAINS.
+ * Monitors incoming user messages for complexity signals and suggests
+ * the BRAINS workflow when 2+ signals are detected (or 1 strong signal).
+ * Never auto-invokes BRAINS — suggestion is advisory only.
+ *
+ * Signals: multi-component scope, architectural decisions, unfamiliar
+ * territory, integration risk, security surface, ambiguous requirements,
+ * greenfield work, major rework.
+ *
+ * Port note: Original plugin used Claude Code's SKILL.md auto-detection.
+ * OpenCode maps this to a session.updated event hook that logs suggestions.
  */
 
 const COMPLEXITY_SIGNALS = [

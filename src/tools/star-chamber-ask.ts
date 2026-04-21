@@ -1,3 +1,15 @@
+/**
+ * star-chamber-ask Custom Tool
+ *
+ * Wraps `uvx star-chamber ask` for multi-LLM design review.
+ * Supports parallel (single-round) and debate (multi-round) modes.
+ *
+ * Port note: Original Claude Code plugin invoked star-chamber via shell
+ * with template literals. This OpenCode version uses `tool()` from
+ * @opencode-ai/plugin with Zod-validated args and Bun.$ for process
+ * execution. The `lean` parameter was removed in polish (6fix-port.md)
+ * as it was declared but never wired to behavior.
+ */
 import { tool } from "@opencode-ai/plugin"
 import { join } from "path"
 import { existsSync, mkdirSync, writeFileSync, rmSync } from "fs"

@@ -1,3 +1,14 @@
+/**
+ * star-chamber-review Custom Tool
+ *
+ * Wraps `uvx star-chamber review` for multi-LLM code/security review.
+ * Used by nurture and secure agents.
+ *
+ * Port note: Original Claude Code plugin invoked star-chamber via shell.
+ * This OpenCode version uses custom tool definitions with Zod schemas.
+ * The `lean` parameter was removed in polish (6fix-port.md) as it
+ * was declared in the schema but never used in the execute function.
+ */
 import { tool } from "@opencode-ai/plugin"
 import { join } from "path"
 import { existsSync, mkdirSync, writeFileSync, rmSync } from "fs"

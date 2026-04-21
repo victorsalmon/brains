@@ -1,3 +1,18 @@
+/**
+ * brains-setup-check Custom Tool
+ *
+ * Verifies BRAINS dependencies and configuration. Checks uv, star-chamber,
+ * git, provider config, brains config, and agent/references directories.
+ *
+ * Port note: Original Claude Code plugin had an interactive setup wizard
+ * (/brains:setup). This OpenCode version is a non-interactive check tool
+ * that returns structured metadata for the agent to consume.
+ *
+ * Polish note (6fix-port.md): Changed from Unix shell `ls` with glob to
+ * Node.js readdirSync for Windows compatibility. Changed status type from
+ * Record<string, string> to Record<string, string | number> to allow
+ * numeric agent counts.
+ */
 import { tool } from "@opencode-ai/plugin"
 import { join } from "path"
 import { existsSync, mkdirSync, readdirSync } from "fs"

@@ -1,14 +1,23 @@
 #!/usr/bin/env bun
 
 /**
- * BRAINS setup script for OpenCode.
+ * BRAINS Setup Script for OpenCode
  *
- * Copies agent definitions, reference docs, and custom tools to the
- * appropriate OpenCode directories. Creates default brains.json config.
+ * Copies agent definitions, reference docs, and compiled tools to
+ * ~/.config/opencode/ directories. Creates default brains.json config.
+ * Checks uv, star-chamber, and git availability.
  *
  * Usage:
  *   bun run scripts/setup.ts          # interactive setup
  *   bun run scripts/setup.ts --check  # check only, no changes
+ *
+ * Port note: Original Claude Code plugin had an interactive setup wizard
+ * (/brains:setup skill). This is a non-interactive file-copy script.
+ *
+ * Polish note (6fix-port.md): Removed src/tools/ fallback — OpenCode
+ * cannot execute TypeScript tool files directly, so dist/ is now a hard
+ * requirement. Also fixed ESM require() → import and added writeFileSync
+ * to the existing fs import.
  */
 
 import { join, dirname } from "path"

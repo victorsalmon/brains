@@ -1,3 +1,23 @@
+/**
+ * BRAINS OpenCode Plugin — Entry Point
+ *
+ * Architecture: BRAINS (Brainstorm Research Architect Implement Nurture Secure)
+ * is a three-phase agentic development workflow ported from the Claude Code plugin
+ * at Epiphytic/brains. The port maps Claude Code concepts to OpenCode equivalents:
+ *
+ *   Claude Code SKILL.md    → OpenCode agent (.md with YAML frontmatter)
+ *   Claude Code Agent tool   → OpenCode Task tool / @mention subagent
+ *   beads (bd CLI)            → OpenCode built-in todo tool
+ *   tmux teammate spawn       → OpenCode subagent (Task tool)
+ *   uvx star-chamber (shell)  → Custom tools wrapping uvx star-chamber CLI
+ *   plugin.json               → opencode.json "plugin" array entry
+ *
+ * Known limitation: OpenCode subagents share session context (no isolation).
+ * See README "Known Limitations" and agents/implement.md for details.
+ *
+ * Polish history: 3feedback-port.md (MiniMax M2.7) → 4fixes-port.md (Qwen 3.6 Plus)
+ * → 5polish-port.md (GLM-5.1) → 6fix-port.md (minimax-m2.7)
+ */
 import type { Plugin, Event } from "@opencode-ai/plugin"
 import starChamberAsk from "./tools/star-chamber-ask.js"
 import starChamberReview from "./tools/star-chamber-review.js"
