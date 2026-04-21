@@ -1,0 +1,49 @@
+{
+  "name": "opencode-brains",
+  "version": "0.1.0",
+  "description": "BRAINS three-phase agentic development workflow for OpenCode — research, plan, implement with multi-LLM review",
+  "author": "Victor Salmon",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "agents/",
+    "references/",
+    "scripts/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "postinstall": "bun run build || echo 'Build failed - run bun run build manually before setup'",
+    "setup": "bun run scripts/setup.ts"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "^0.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.1.0"
+  },
+  "keywords": [
+    "opencode",
+    "plugin",
+    "brains",
+    "agentic",
+    "workflow",
+    "multi-llm",
+    "star-chamber"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Epiphytic/opencode-brains"
+  }
+}
