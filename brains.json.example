@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "mode": "parallel",
+  "autopilot": false,
+  "lean": false,
+  "debateRounds": 2,
+  "defaultModel": "anthropic/claude-sonnet-4-20250514",
+  "teammateModel": "anthropic/claude-sonnet-4-20250514",
+  "escalateOnRetry": true,
+  "pollingIntervalSeconds": 15,
+  "userResponseTimeoutSeconds": 14400,
+  "baseBranches": ["main", "master", "develop"]
+}
