@@ -22,7 +22,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target bun",
+    "build": "bun build src/index.ts src/tools/star-chamber-ask.ts src/tools/star-chamber-review.ts src/tools/brains-setup-check.ts --outdir dist --target bun",
     "postinstall": "bun run build",
     "setup": "bun run scripts/setup.ts",
     "test": "bun test"
