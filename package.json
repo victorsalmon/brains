@@ -23,16 +23,16 @@
   ],
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target bun",
-    "postinstall": "bun run build || echo 'Build failed - run bun run build manually before setup'",
+    "postinstall": "bun run build",
     "setup": "bun run scripts/setup.ts",
     "test": "bun test"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^0.1.0",
-    "zod": "^3.24.0"
+    "@opencode-ai/plugin": "1.18.10",
+    "zod": "3.25.76"
   },
   "devDependencies": {
-    "bun-types": "^1.1.0"
+    "bun-types": "1.3.14"
   },
   "keywords": [
     "opencode",
