@@ -17,8 +17,8 @@ This file tells any AI assistant (human or automated) what they need to know bef
 | Script | Purpose |
 |--------|---------|
 | `npm run build` | Build TypeScript source with Bun |
-| `npm run setup` | Run setup wizard (`bun run scripts/setup.ts`) |
-| `npm test` | Run test suite (`bun test`) |
+| `npm run setup` | Run setup wizard |
+| `bun run scripts/setup.ts` | Setup script entry point |
 
 ## Git Workflow
 
