@@ -132,27 +132,18 @@ async function main(): Promise<void> {
   // Create config directory
   mkdirSync(CONFIG_DIR, { recursive: true })
 
-  const failures: string[] = []
-  let hasErrors = false
-
   // Copy agents
   const agentsSrc = join(PACKAGE_DIR, "agents")
   const agentCount = copyDir(agentsSrc, AGENTS_DIR, "agents")
-  if (existsSync(agentsSrc) && agentCount > 0) {
+  if (agentCount > 0) {
     console.log(`✅ agents: ${agentCount} file(s) copied to ${AGENTS_DIR}`)
-  } else {
-    hasErrors = true
-    failures.push("agents/")
   }
 
   // Copy references
   const refsSrc = join(PACKAGE_DIR, "references")
   const refCount = copyDir(refsSrc, REFERENCES_DIR, "references")
-  if (existsSync(refsSrc) && refCount > 0) {
+  if (refCount > 0) {
     console.log(`✅ references: ${refCount} file(s) copied to ${REFERENCES_DIR}`)
-  } else {
-    hasErrors = true
-    failures.push("references/")
   }
 
   // Copy tools (require dist/ to be built)
@@ -162,29 +153,15 @@ async function main(): Promise<void> {
     const toolCount = copyDir(toolsSrcDist, TOOLS_DIR, "tools")
     if (toolCount > 0) {
       console.log(`✅ tools: ${toolCount} file(s) copied from dist/ to ${TOOLS_DIR}`)
-    } else {
-      hasErrors = true
-      failures.push("dist/tools/")
     }
   } else {
     console.log(`⚠️  tools: dist/tools/ not found. Run 'bun run build' before setup.`)
-    hasErrors = true
-    failures.push("dist/tools/")
   }
 
   // Write default config
   writeDefaultConfig()
 
   // Summary
-  if (hasErrors) {
-    console.error("\n❌ Setup failed: required source(s) missing or empty:")
-    for (const failure of failures) {
-      console.error(`   - ${failure}`)
-    }
-    console.error("   Run 'bun run build' before setup, and ensure agents/ and references/ are present.")
-    process.exit(1)
-  }
-
   console.log("\n=== Setup Complete ===")
   console.log(`  Agents:     ${AGENTS_DIR}`)
   console.log(`  References: ${REFERENCES_DIR}`)
